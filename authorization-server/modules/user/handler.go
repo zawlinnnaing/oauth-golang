@@ -2,15 +2,39 @@ package user
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/app_error"
 	"net/http"
 )
 
-func PostSignIn(w http.ResponseWriter, r *http.Request) {
-
+func handleSignIn(w http.ResponseWriter, r *http.Request) {
+	var body SignInBody
+	err := json.NewDecoder(r.Body).Decode(&body)
+	w.Header().Set("Content-Type", "application/json")
+	if err != nil {
+		app_error.HTTPError(w, "failed-to-parse-request", http.StatusBadRequest, err)
+		return
+	}
+	err = body.Validate()
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(err)
+		return
+	}
+	resp, err := NewService().SignIn(&body)
+	if err != nil {
+		status := http.StatusInternalServerError
+		if errors.Is(err, ErrUserNotFound) || errors.Is(err, ErrInvalidPassword) {
+			status = http.StatusBadRequest
+		}
+		app_error.HTTPError(w, err.Error(), status, err)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(resp)
 }
 
-func PostSignUp(w http.ResponseWriter, r *http.Request) {
+func handleSignUp(w http.ResponseWriter, r *http.Request) {
 	var body SignUpBody
 	err := json.NewDecoder(r.Body).Decode(&body)
 	w.Header().Set("Content-Type", "application/json")
@@ -47,11 +71,11 @@ func PostSignUp(w http.ResponseWriter, r *http.Request) {
 
 func Router(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" && r.URL.Path == "/users/sign-in" {
-		PostSignIn(w, r)
+		handleSignIn(w, r)
 		return
 	}
 	if r.Method == "POST" && r.URL.Path == "/users/sign-up" {
-		PostSignUp(w, r)
+		handleSignUp(w, r)
 		return
 	}
 	http.Error(w, "Not Found", http.StatusNotFound)

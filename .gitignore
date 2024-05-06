@@ -21,8 +21,12 @@
 # Go workspace file
 go.work
 
-
+# Environment files
 **/.env*
 !**/.env.example
 
+# Automatically generated files
 **/tmp
+
+# Docker-compose override
+docker-compose.override*.yaml
