@@ -3,8 +3,9 @@ package user
 import (
 	"encoding/json"
 	"errors"
-	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/app_error"
 	"net/http"
+
+	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/app_error"
 )
 
 func handleSignIn(w http.ResponseWriter, r *http.Request) {

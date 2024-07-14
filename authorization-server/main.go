@@ -2,11 +2,13 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net/http"
+
+	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/client_app"
 	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/config"
 	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/database"
 	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/user"
-	"log"
-	"net/http"
 )
 
 func main() {
@@ -20,7 +22,7 @@ func main() {
 	if err != nil {
 		log.Fatal("Failed to connect database", err)
 	}
-	err = db.AutoMigrate(&user.User{})
+	err = db.AutoMigrate(&user.User{}, &client_app.ClientApp{})
 	if err != nil {
 		log.Fatal("Auto migration failed", err)
 	}
