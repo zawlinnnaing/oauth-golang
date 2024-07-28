@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
 
 	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/client_app"
 	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/config"
@@ -27,7 +26,7 @@ func main() {
 		log.Fatal("Auto migration failed", err)
 	}
 	log.Println("Database connected and migrated successfully")
-	mux := createServer()
-	log.Println("Starting authorization-server at", fmt.Sprintf("0.0.0.0:%s", config.PORT))
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", config.PORT), mux))
+	server := createServer()
+	server.Run(fmt.Sprintf(":%s", config.PORT))
+	log.Println("Running authorization-server at", fmt.Sprintf("0.0.0.0:%s", config.PORT))
 }

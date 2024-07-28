@@ -1,15 +1,18 @@
 package main
 
 import (
-	"net/http"
-
-	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/client_app"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/user"
+	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/validators"
 )
 
-func createServer() *http.ServeMux {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/users/", user.Router)
-	mux.HandleFunc("/client-apps/", client_app.Router)
-	return mux
+func createServer() *gin.Engine {
+	router := gin.Default()
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		v.RegisterValidation("password", validators.PasswordValidator)
+	}
+	user.Router(router)
+	return router
 }

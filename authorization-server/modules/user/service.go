@@ -2,6 +2,7 @@ package user
 
 import (
 	"errors"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -18,10 +19,6 @@ var (
 )
 
 func (service *Service) SignUp(body *SignUpBody) (*User, error) {
-	err := body.Validate()
-	if err != nil {
-		return nil, err
-	}
 	existingUser, err := service.repository.FindByEmail(body.Email)
 	if err != nil {
 		return nil, err
