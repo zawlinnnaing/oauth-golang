@@ -3,7 +3,7 @@ package client_app
 import "github.com/zawlinnnaing/oauth-golang/authorization-server/modules/app_error"
 
 type RegistrationBody struct {
-	Name        string  `json:"name"`
+	Name        string  `json:"name" validate:"required"`
 	RedirectURI *string `json:"redirect_uri"`
 }
 

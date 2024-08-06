@@ -2,8 +2,10 @@ package user
 
 import (
 	"errors"
-	jwt "github.com/golang-jwt/jwt/v5"
 	"time"
+
+	jwt "github.com/golang-jwt/jwt/v5"
+	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/config"
 )
 
 const (
@@ -24,6 +26,8 @@ type TokenResponse struct {
 	TTL   int64  `json:"ttl"`
 }
 
+var signingMethod = jwt.SigningMethodHS512
+
 func SignToken(userId string, tokenType int) (*TokenResponse, error) {
 	var expiresIn int64
 	switch tokenType {
@@ -34,12 +38,12 @@ func SignToken(userId string, tokenType int) (*TokenResponse, error) {
 	default:
 		return nil, ErrInvalidTokenType
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodES512, jwt.MapClaims{
-		"userId": userId,
-		"iss":    "simple-oauth",
-		"exp":    expiresIn,
+	token := jwt.NewWithClaims(signingMethod, jwt.MapClaims{
+		"sub": userId,
+		"iss": "simple-oauth",
+		"exp": expiresIn,
 	})
-	tokenStr, err := token.SigningString()
+	tokenStr, err := token.SignedString([]byte(config.JWT_SECRET))
 	if err != nil {
 		return nil, err
 	}
@@ -47,4 +51,18 @@ func SignToken(userId string, tokenType int) (*TokenResponse, error) {
 		Token: tokenStr,
 		TTL:   expiresIn,
 	}, nil
+}
+
+func ValidateToken(tokenStr string) (*jwt.Token, error) {
+	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+		// fmt.Println("token", token.Method)
+		// if token.Method != signingMethod {
+		// 	return nil, fmt.Errorf("unexpected Signing method: %v", token.Method.Alg())
+		// }
+		return config.JWT_SECRET, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return token, nil
 }

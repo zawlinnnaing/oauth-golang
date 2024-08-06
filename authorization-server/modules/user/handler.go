@@ -65,6 +65,7 @@ func (h *Handler) HandleSignIn(context *gin.Context) {
 			status = http.StatusBadRequest
 		}
 		context.JSON(status, gin.H{"error": err.Error()})
+		return
 	}
 	context.JSON(http.StatusOK, resp)
 }

@@ -1,8 +1,9 @@
 package config
 
 import (
-	"github.com/joho/godotenv"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 var (
@@ -14,6 +15,7 @@ var (
 	DB_SSL       = "disable"
 	DB_TIME_ZONE = ""
 	PORT         = ""
+	JWT_SECRET   = ""
 )
 
 func Init() error {
@@ -21,6 +23,7 @@ func Init() error {
 	if err != nil {
 		return err
 	}
+	JWT_SECRET = os.Getenv("JWT_SECRET")
 	DB_USER = os.Getenv("DB_USER")
 	DB_NAME = os.Getenv("DB_NAME")
 	DB_PORT = os.Getenv("DB_PORT")

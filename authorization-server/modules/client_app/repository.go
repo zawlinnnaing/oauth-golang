@@ -18,8 +18,9 @@ func (r *Repository) Register(body RegistrationBody) (*ClientApp, error) {
 		ID:          id.String(),
 		Name:        body.Name,
 		RedirectURI: body.RedirectURI,
-		CreatedAt:   time.Time{},
-		UpdatedAt:   time.Time{},
+		// UserID: ,
+		CreatedAt: time.Time{},
+		UpdatedAt: time.Time{},
 	}
 	result := database.DB.Create(clientApp)
 	if result.Error != nil {

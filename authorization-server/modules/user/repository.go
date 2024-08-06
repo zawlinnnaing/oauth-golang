@@ -2,11 +2,12 @@ package user
 
 import (
 	"errors"
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/database"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"time"
 )
 
 type Repository struct {
@@ -43,6 +44,15 @@ func (repo *Repository) Create(body SignUpBody) (*User, error) {
 		UpdatedAt: time.Time{},
 	}
 	result := database.DB.Create(user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return user, nil
+}
+
+func (repo *Repository) FindByID(id string) (*User, error) {
+	user := &User{}
+	result := database.DB.Where("id = ?", id).First(user)
 	if result.Error != nil {
 		return nil, result.Error
 	}

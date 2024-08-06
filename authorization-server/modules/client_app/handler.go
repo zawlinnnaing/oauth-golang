@@ -3,24 +3,24 @@ package client_app
 import (
 	"net/http"
 
-	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/common"
+	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
 	service *Service
 }
 
-func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) handleRegister(context *gin.Context) {
 	var body RegistrationBody
-	err := common.DecodeAndValidate(w, r, &body)
-	if err != nil {
+	if err := context.ShouldBind(&body); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err = h.service.Register(w, body)
+	err := h.service.Register(body)
 	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	w.WriteHeader(http.StatusCreated)
 }
 
 func NewHandler(service *Service) *Handler {
