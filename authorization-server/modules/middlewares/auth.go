@@ -13,8 +13,9 @@ func Authenticated() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		userRepo := user.NewRepository()
 		authorization := ctx.GetHeader("Authorization")
-		authorization = strings.ReplaceAll(authorization, "Bearer", "")
-		fmt.Println("Token:", authorization)
+		authorization = strings.ReplaceAll(authorization, "Bearer ", "")
+		authorization = strings.TrimSpace(authorization)
+		fmt.Println("Auth Token:", authorization)
 		token, err := user.ValidateToken(authorization)
 		if err != nil {
 			fmt.Println(err)
@@ -39,7 +40,7 @@ func Authenticated() gin.HandlerFunc {
 			})
 			return
 		}
-		ctx.Set("user", user)
+		ctx.Set("user", *user)
 		ctx.Next()
 	}
 }

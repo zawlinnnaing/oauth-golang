@@ -2,6 +2,7 @@ package user
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	jwt "github.com/golang-jwt/jwt/v5"
@@ -26,40 +27,41 @@ type TokenResponse struct {
 	TTL   int64  `json:"ttl"`
 }
 
-var signingMethod = jwt.SigningMethodHS512
+var signingMethod = jwt.SigningMethodHS256
+var jwtSecret = []byte(config.JWT_SECRET)
 
 func SignToken(userId string, tokenType int) (*TokenResponse, error) {
-	var expiresIn int64
+	var expiresIn time.Time
 	switch tokenType {
 	case AccessToken:
-		expiresIn = time.Now().Add(time.Hour * 24).Unix()
+		expiresIn = time.Now().Add(time.Hour * 24)
 	case RefreshToken:
-		expiresIn = time.Now().Add(time.Hour * 24 * 7).Unix()
+		expiresIn = time.Now().Add(time.Hour * 24 * 7)
 	default:
 		return nil, ErrInvalidTokenType
 	}
-	token := jwt.NewWithClaims(signingMethod, jwt.MapClaims{
-		"sub": userId,
-		"iss": "simple-oauth",
-		"exp": expiresIn,
-	})
-	tokenStr, err := token.SignedString([]byte(config.JWT_SECRET))
+	claims := &jwt.RegisteredClaims{
+		ExpiresAt: jwt.NewNumericDate(expiresIn),
+		Subject:   userId,
+		Issuer:    "simple-oauth",
+	}
+	token := jwt.NewWithClaims(signingMethod, claims)
+	tokenStr, err := token.SignedString(jwtSecret)
 	if err != nil {
 		return nil, err
 	}
 	return &TokenResponse{
 		Token: tokenStr,
-		TTL:   expiresIn,
+		TTL:   expiresIn.Unix(),
 	}, nil
 }
 
 func ValidateToken(tokenStr string) (*jwt.Token, error) {
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-		// fmt.Println("token", token.Method)
-		// if token.Method != signingMethod {
-		// 	return nil, fmt.Errorf("unexpected Signing method: %v", token.Method.Alg())
-		// }
-		return config.JWT_SECRET, nil
+		if token.Method != signingMethod {
+			return nil, fmt.Errorf("unexpected Signing method: %v", token.Method.Alg())
+		}
+		return jwtSecret, nil
 	})
 	if err != nil {
 		return nil, err
