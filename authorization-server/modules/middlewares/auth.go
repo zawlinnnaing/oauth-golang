@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -15,10 +14,8 @@ func Authenticated() gin.HandlerFunc {
 		authorization := ctx.GetHeader("Authorization")
 		authorization = strings.ReplaceAll(authorization, "Bearer ", "")
 		authorization = strings.TrimSpace(authorization)
-		fmt.Println("Auth Token:", authorization)
 		token, err := user.ValidateToken(authorization)
 		if err != nil {
-			fmt.Println(err)
 			ctx.JSON(401, gin.H{
 				"message": "Unauthorized",
 			})
