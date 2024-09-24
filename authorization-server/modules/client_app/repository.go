@@ -5,11 +5,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/database"
+	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/user"
 )
 
 type Repository struct{}
 
-func (r *Repository) Register(body RegistrationBody) (*ClientApp, error) {
+func (r *Repository) Register(body RegistrationBody, u user.User) (*ClientApp, error) {
 	id, err := uuid.NewV7()
 	if err != nil {
 		return nil, err
@@ -18,9 +19,9 @@ func (r *Repository) Register(body RegistrationBody) (*ClientApp, error) {
 		ID:          id.String(),
 		Name:        body.Name,
 		RedirectURI: body.RedirectURI,
-		// UserID: ,
-		CreatedAt: time.Time{},
-		UpdatedAt: time.Time{},
+		User:        u,
+		CreatedAt:   time.Time{},
+		UpdatedAt:   time.Time{},
 	}
 	result := database.DB.Create(clientApp)
 	if result.Error != nil {
