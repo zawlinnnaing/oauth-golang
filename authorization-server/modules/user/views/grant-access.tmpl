@@ -1,0 +1,23 @@
+<html>
+
+<head>
+    <title>Grant Access</title>
+</head>
+
+<body>
+    <h1>Grant Access</h1>
+    <p>
+        For the sake of simplicity, we will force user to login every time when they want to grant access.
+        In the real world application, user may already have logged in on the Oauth provider.
+    </p>
+    <form method="post">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" required />
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required />
+        <input hidden type="text" name="client_id" value="{{ .client_id }}" />
+        <input hidden type="text" name="redirect_uri" value="{{ .redirect_uri}}" />
+        <button type="submit">Grant Access</button>
+    </form>
+</body>
+</html>

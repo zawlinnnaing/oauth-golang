@@ -30,6 +30,15 @@ func (r *Repository) Register(body RegistrationBody, u user.User) (*ClientApp, e
 	return clientApp, nil
 }
 
+func (r *Repository) FindByID(id string) (*ClientApp, error) {
+	var clientApp ClientApp
+	result := database.DB.Where("id = ?", id).First(&clientApp)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &clientApp, nil
+}
+
 func NewRepository() *Repository {
 	return &Repository{}
 }

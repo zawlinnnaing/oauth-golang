@@ -9,7 +9,7 @@ import (
 type ClientApp struct {
 	ID          string    `gorm:"primaryKey" json:"id"`
 	Name        string    `json:"name"`
-	RedirectURI *string   `json:"redirect_uri"`
+	RedirectURI string    `gorm:"not null" json:"redirect_uri"`
 	UserID      string    `gorm:"not null" json:"user_id"`
 	User        user.User `json:"user"`
 	CreatedAt   time.Time `json:"created_at"`

@@ -7,33 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// func handleSignIn(w http.ResponseWriter, r *http.Request) {
-// 	var body SignInBody
-// 	err := json.NewDecoder(r.Body).Decode(&body)
-// 	w.Header().Set("Content-Type", "application/json")
-// 	if err != nil {
-// 		app_error.HTTPError(w, "failed-to-parse-request", http.StatusBadRequest, err)
-// 		return
-// 	}
-// 	err = body.Validate()
-// 	if err != nil {
-// 		w.WriteHeader(http.StatusBadRequest)
-// 		json.NewEncoder(w).Encode(err)
-// 		return
-// 	}
-// 	resp, err := NewService().SignIn(&body)
-// 	if err != nil {
-// 		status := http.StatusInternalServerError
-// 		if errors.Is(err, ErrUserNotFound) || errors.Is(err, ErrInvalidPassword) {
-// 			status = http.StatusBadRequest
-// 		}
-// 		app_error.HTTPError(w, err.Error(), status, err)
-// 		return
-// 	}
-// 	w.WriteHeader(http.StatusOK)
-// 	json.NewEncoder(w).Encode(resp)
-// }
-
 type Handler struct {
 	Service *Service
 }
@@ -68,6 +41,10 @@ func (h *Handler) HandleSignIn(context *gin.Context) {
 		return
 	}
 	context.JSON(http.StatusOK, resp)
+}
+
+func (h *Handler) HandleGrantAccessUI(context *gin.Context) {
+	h.Service.GrantAccessUI(context)
 }
 
 func NewHandler(service *Service) *Handler {

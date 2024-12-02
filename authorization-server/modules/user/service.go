@@ -2,12 +2,16 @@ package user
 
 import (
 	"errors"
+	"net/http"
 
+	"github.com/gin-gonic/gin"
+	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/client_app"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Service struct {
-	repository *Repository
+	repository          *Repository
+	clientAppRepository *client_app.Repository
 }
 
 const passwordCost = 14
@@ -59,8 +63,34 @@ func (service *Service) SignIn(body *SignInBody) (*SignInResponse, error) {
 	}, nil
 }
 
+func (service *Service) GrantAccessUI(context *gin.Context) {
+	redirectURI := context.Query("redirect_uri")
+	clientID := context.Query("client_id")
+	if redirectURI == "" || clientID == "" {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "redirect_uri and client_id are required"})
+		return
+	}
+	clientApp, err := service.clientAppRepository.FindByID(clientID)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+	}
+	if clientApp.RedirectURI != redirectURI {
+		context.JSON(http.StatusBadRequest, gin.H{
+			"error": "Redirect URI does not match with registered app.",
+		})
+	}
+	context.HTML(http.StatusOK, "grant-access.tmpl", gin.H{
+		"client_id":    clientApp.ID,
+		"redirect_uri": clientApp.RedirectURI,
+	})
+
+}
+
 func NewService() *Service {
 	return &Service{
-		repository: NewRepository(),
+		repository:          NewRepository(),
+		clientAppRepository: client_app.NewRepository(),
 	}
 }
