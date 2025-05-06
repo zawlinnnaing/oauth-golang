@@ -5,16 +5,18 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/auth"
 	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/user"
 )
 
 func Authenticated() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		userRepo := user.NewRepository()
+		authService := auth.NewAuthService()
 		authorization := ctx.GetHeader("Authorization")
 		authorization = strings.ReplaceAll(authorization, "Bearer ", "")
 		authorization = strings.TrimSpace(authorization)
-		token, err := user.ValidateToken(authorization)
+		token, err := authService.ValidateToken(authorization)
 		if err != nil {
 			ctx.JSON(401, gin.H{
 				"message": "Unauthorized",

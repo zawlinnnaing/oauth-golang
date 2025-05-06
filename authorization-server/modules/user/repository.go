@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/common/models"
 	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/database"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -13,8 +14,8 @@ import (
 type Repository struct {
 }
 
-func (repo *Repository) FindByEmail(email string) (*User, error) {
-	user := &User{}
+func (repo *Repository) FindByEmail(email string) (*models.User, error) {
+	user := &models.User{}
 	result := database.DB.Where("email = ?", email).First(user)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -25,7 +26,7 @@ func (repo *Repository) FindByEmail(email string) (*User, error) {
 	return user, nil
 }
 
-func (repo *Repository) Create(body SignUpBody) (*User, error) {
+func (repo *Repository) Create(body SignUpBody) (*models.User, error) {
 	userID, err := uuid.NewV7()
 	if err != nil {
 		return nil, err
@@ -34,7 +35,7 @@ func (repo *Repository) Create(body SignUpBody) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	user := &User{
+	user := &models.User{
 		ID:        userID.String(),
 		Email:     body.Email,
 		FirstName: body.FirstName,
@@ -50,8 +51,8 @@ func (repo *Repository) Create(body SignUpBody) (*User, error) {
 	return user, nil
 }
 
-func (repo *Repository) FindByID(id string) (*User, error) {
-	user := &User{}
+func (repo *Repository) FindByID(id string) (*models.User, error) {
+	user := &models.User{}
 	result := database.DB.Where("id = ?", id).First(user)
 	if result.Error != nil {
 		return nil, result.Error

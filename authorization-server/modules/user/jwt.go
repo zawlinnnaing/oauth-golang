@@ -2,7 +2,6 @@ package user
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	jwt "github.com/golang-jwt/jwt/v5"
@@ -54,17 +53,4 @@ func SignToken(userId string, tokenType int) (*TokenResponse, error) {
 		Token: tokenStr,
 		TTL:   expiresIn.Unix(),
 	}, nil
-}
-
-func ValidateToken(tokenStr string) (*jwt.Token, error) {
-	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-		if token.Method != signingMethod {
-			return nil, fmt.Errorf("unexpected Signing method: %v", token.Method.Alg())
-		}
-		return jwtSecret, nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	return token, nil
 }

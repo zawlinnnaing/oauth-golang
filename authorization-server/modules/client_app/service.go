@@ -1,13 +1,13 @@
 package client_app
 
-import "github.com/zawlinnnaing/oauth-golang/authorization-server/modules/user"
+import "github.com/zawlinnnaing/oauth-golang/authorization-server/modules/common/models"
 
 type Service struct {
 	repo *Repository
 }
 
-func (s *Service) Register(body RegistrationBody, user user.User) (*ClientApp, error) {
-	clientApp, err := s.repo.Register(body, user)
+func (s *Service) Register(body RegistrationBody, userId string) (*models.ClientApp, error) {
+	clientApp, err := s.repo.Register(body, userId)
 	return clientApp, err
 }
 

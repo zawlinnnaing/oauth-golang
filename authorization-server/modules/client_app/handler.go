@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/user"
+	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/common/models"
 )
 
 type Handler struct {
@@ -22,7 +22,7 @@ func (h *Handler) handleRegister(context *gin.Context) {
 		context.JSON(http.StatusUnauthorized, gin.H{"error": "user.does-not-exist"})
 		return
 	}
-	clientApp, err := h.service.Register(body, authUser.(user.User))
+	clientApp, err := h.service.Register(body, authUser.(models.User).ID)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

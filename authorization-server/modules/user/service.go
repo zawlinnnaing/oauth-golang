@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/client_app"
+	"github.com/zawlinnnaing/oauth-golang/authorization-server/modules/common/models"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -22,7 +23,7 @@ var (
 	ErrInvalidPassword   = errors.New("user.invalid-password")
 )
 
-func (service *Service) SignUp(body *SignUpBody) (*User, error) {
+func (service *Service) SignUp(body *SignUpBody) (*models.User, error) {
 	existingUser, err := service.repository.FindByEmail(body.Email)
 	if err != nil {
 		return nil, err
